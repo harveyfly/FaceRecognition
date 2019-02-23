@@ -1,0 +1,7 @@
+opencv-python
+scipy==1.0.0
+Pillow
+tensorflow
+matplotlib
+sklearn
+flask
