@@ -180,6 +180,32 @@ def embedding(filename):
     else:
         pass
 
+# 比对人脸相似度
+@app.route('/compare', methods={'POST', 'GET'})
+def compare():
+    file_dir = os.path.join(basedir, app.config['CROP_IMG_FOLDER'])
+    if request.method == "GET":
+        face1 = request.args.get("face1")
+        face2 = request.args.get("face2")
+        if face1 is None or face2 is None:
+            # 错误码1002-图片名为空
+            return jsonify({"sucess": False, "error": 1002})
+        else:
+            face1_path = os.path.join(file_dir, '%s' % face1)
+            face2_path = os.path.join(file_dir, '%s' % face2)
+            if os.path.exists(face1_path) and os.path.exists(face2_path):
+                face_token1 = EmbeddingFace(face1_path)[0]
+                face_token2 = EmbeddingFace(face2_path)[0]
+                dist = np.sqrt(np.sum(np.square(np.subtract(face_token1, face_token2))))
+                return jsonify({"sucess": True, "face1": face1, "face2": face2, "distance": str(dist)})
+            else:
+                # 错误码1003-图片文件不存在
+                return jsonify({"sucess": False, "error": 1003, "error_msg": "file not exist!"})
+    else:
+        pass
+
+    
+
 # 下载图片
 @app.route('/download/<string:filename>', methods=['GET'])
 def download(filename):
