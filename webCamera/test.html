@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Face Recognition Demo</title>
+	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="./css/bootstrap-select.css">
+	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="./js/bootstrap-select.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-default" role="navigation">
+	<div class="container-fluid"> 
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">Face Recognition Demo</a>
+		</div>
+		<div class="collapse navbar-collapse" id="example-navbar-collapse"> 
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="#">人脸检测</a></li>
+				<li><a href="#">人脸对比</a></li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+						其他 <b class="caret"></b>
+					</a>
+					<ul class="dropdown-menu">
+						<li><a href="#">jmeter</a></li>
+						<li><a href="#">EJB</a></li>
+						<li><a href="#">Jasper Report</a></li>
+						<li class="divider"></li>
+						<li><a href="#">分离的链接</a></li>
+						<li class="divider"></li>
+						<li><a href="#">另一个分离的链接</a></li>
+					</ul>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
+<div class="container"> 
+	<div class="row clearfix">
+		<div class="col-md-4 column">
+			<video id="camera" style="width: 100%; height: 320px;" autoplay></video>
+			<div class="btn-group">
+				<button class="btn btn-default" id="getVideo">Get Video</button> 
+				<select id="select" class="selectpicker">
+					<option></option>
+				</select>
+			</div>
+		</div>
+		<div class="col-md-4 column">
+			<canvas style="width: 100%; height: 320px;" id="canvas">
+				<img src="img/face.jpg">
+			</canvas>
+			<button type="button" class="btn btn-default" id="snap">Get Photo</button>
+		</div>
+		<div class="col-md-4 column">
+		</div>
+	</div>
+</div>
+</body>
+<script src="./css/app.js"></script>
+</html>

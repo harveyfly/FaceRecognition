@@ -4,30 +4,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Camera selection</title>
-  <link rel="stylesheet" href="./app.css" />
-
+  <link rel="stylesheet" href="./css/app.css" />
+  <link rel="stylesheet" href="./css/bootstrap.css">
+  <script src="./js/bootstrap.js"></script>
 </head>
 
 <body>
 
   <header>
-    <h1>Camera fun</h1>
+    <h1>Face Recognition Demo</h1>
   </header>
 
   <main>
     <div class="controls">
-      <button id="button">Get camera</button>
+      <button id="snap">Get Photo</button>
+      <button id="button">Get Video</button>
       <select id="select">
         <option></option>
       </select>
     </div>
 
-    <video id="video" autoplay playsinline></video>
+    <video id="video" width="500" height="400" autoplay></video>
+    <canvas id="canvas" width="500" height="400"></canvas>
   </main>
 
-  <script src="./app.js"></script>
+  <script src="./css/app.js"></script>
 </body>
 
 </html>

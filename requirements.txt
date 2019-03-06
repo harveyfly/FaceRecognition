@@ -5,3 +5,6 @@ tensorflow
 matplotlib
 sklearn
 flask
+configparser
+mysqlclient
+imutils

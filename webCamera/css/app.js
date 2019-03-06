@@ -1,6 +1,6 @@
-const video = document.getElementById('video');
-const button = document.getElementById('button');
-const select = document.getElementById('select');
+const video = document.getElementById('camera');
+const canvas = document.getElementById('canvas');
+const button = document.getElementById('getVideo');
 let currentStream;
 
 function stopMediaTracks(stream) {
@@ -10,17 +10,16 @@ function stopMediaTracks(stream) {
 }
 
 function gotDevices(mediaDevices) {
-  select.innerHTML = '';
-  select.appendChild(document.createElement('option'));
+  $("#select").innerHTML = '';
+  $("#select").append(document.createElement('option'));
   let count = 1;
   mediaDevices.forEach(mediaDevice => {
     if (mediaDevice.kind === 'videoinput') {
-      const option = document.createElement('option');
-      option.value = mediaDevice.deviceId;
-      const label = mediaDevice.label || `Camera ${count++}`;
-      const textNode = document.createTextNode(label);
-      option.appendChild(textNode);
-      select.appendChild(option);
+      var label = mediaDevice.label || `Camera ${count++}`;
+      var value = mediaDevice.deviceId;
+      var option = "<options value='"+value+"'>"+label+"</option>";
+      $("#select").append(option);
+      $("#select").selectpicker('refresh');
     }
   });
 }
@@ -30,10 +29,10 @@ button.addEventListener('click', event => {
     stopMediaTracks(currentStream);
   }
   const videoConstraints = {};
-  if (select.value === '') {
+  if ($("#select").value === '') {
     videoConstraints.facingMode = 'environment';
   } else {
-    videoConstraints.deviceId = { exact: select.value };
+    videoConstraints.deviceId = { exact: $("#select").value };
   }
   const constraints = {
     video: videoConstraints,
@@ -53,3 +52,9 @@ button.addEventListener('click', event => {
 });
 
 navigator.mediaDevices.enumerateDevices().then(gotDevices);
+
+// 触发拍照动作
+document.getElementById("snap").addEventListener("click", function() {
+  var context = canvas.getContext("2d");
+  context.drawImage(video, 0, 0, 640, 480);
+});
