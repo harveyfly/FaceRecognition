@@ -43,6 +43,21 @@ class face_db:
             print("face_token is None, Insert Error")
         return False
 
+    def delete_face(self, face_token):
+        if face_token is not None:
+            cursor = self.db_conn.cursor()
+            sqlDelete = "DELETE FROM `face_set` WHERE `face_token`='%s'"
+            try:
+                cursor.execute(sqlDelete, face_token)
+                self.db_conn.commit()
+                return True
+            except Exception:
+                print("Execute Delete Error!")
+                return False
+        else:
+            print("face_token is None, Delete Error!")
+        return False
+
     def get_face_dist(self, face_token):
         if face_token is not None:
             cursor = self.db_conn.cursor()

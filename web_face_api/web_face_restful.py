@@ -166,33 +166,9 @@ def detect():
     else:
         return error.get_error("1005", error_msg=None)
 
-# 生成人脸face_dist
-@app.route('/embedding/<string:filename>', methods=['GET'])
-def embedding(filename):
-    file_dir = os.path.join(basedir, app.config['CROP_IMG_FOLDER'])
-    if request.method == 'GET':
-        if filename is None:
-            # 错误码1002-图片名为空
-            return jsonify({"sucess": False, "error": 1002})
-        else:
-            file_path = os.path.join(file_dir, '%s' % filename)
-            if os.path.exists(file_path):
-                face_dist = EmbeddingFace(file_path)[0]
-                face_token = gen_face_token()
-                if FaceDB.insert_face(face_token, face_dist):
-                    return jsonify({"sucess": True, "filename": filename, "face_token": face_token})
-                else:
-                    # 错误码1004-数据库错误
-                    return jsonify({"sucess": False, "error": 1004, "error_msg": "database Error!"})
-            else:
-                # 错误码1003-图片文件不存在
-                return jsonify({"sucess": False, "error": 1003, "error_msg": "file not exist!"})
-    else:
-        pass
-
-# 比对人脸相似度
-@app.route('/compare', methods={'POST', 'GET'})
-def compare():
+# 查找相似人脸信息
+@app.route('/search', methods={'POST', 'GET'})
+def search():
     if request.method == "GET":
         face_token = request.args.get('face_token')
         threshold = request.args.get('threshold')
@@ -213,11 +189,13 @@ def compare():
             for face in face_set:
                 face_set_token = face['face_token']
                 face_set_dist = face['face_dist']
+                face_set_name = face['face_name']
                 dist = np.sqrt(np.sum(np.square(np.subtract(face_dist_cmp, face_set_dist))))
-                if dist <= float(threshold):
+                if face_token != face_set_token and dist <= float(threshold):
                     re_face = {}
                     re_face['face_token'] = face_set_token
                     re_face['distant'] = dist
+                    re_face['face_name'] = face_set_name
                     re_info.append(re_face)
             return jsonify({
                 "sucess": True, 
@@ -239,7 +217,7 @@ def addface():
         # 输入参数不完整
         return error.get_error("1002", error_msg=None)
     if face_name is None:
-        face_name = 'NULL'
+        face_name = 'unkonwn'
     not_found = True
     for face in face_info:
         if(face['face_token'] == face_token):
@@ -263,6 +241,24 @@ def addface():
             break
     if not_found:
         return error.get_error("1006", error_msg=None)
+
+# 从face_set中删除人脸信息
+@app.route('/removeface', methods=['GET'])
+def removeface():
+    if request.method != 'GET':
+        pass
+    face_token_op = request.args.get('face_token')
+    if face_token_op is None:
+        # 输入参数不完整
+        return error.get_error("1002", error_msg=None)
+    flag = FaceDB.delete_face(face_token_op)
+    if flag:
+        return jsonify({
+            "sucess": True,
+            "face_token": face_token_op,
+        })
+    else:
+        return error.get_error("1003", error_msg=None)
     
 # 下载图片
 @app.route('/download/<string:filename>', methods=['GET'])
