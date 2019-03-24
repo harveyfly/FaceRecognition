@@ -93,7 +93,7 @@ bottom_right|Object|人脸位置矩形边框的右下角坐标
 #### 返回值说明
 字段|类型|说明
 :---|:---|:---
-sucess|Bool|标志位，表示请求是否成功
+sucess|Bool|标志位，表示操作是否成功
 face_token|String|进行搜索的目标人脸的 face_token
 threshold|String|用于比较的距离阈值, 表示两个人脸信息向量在欧式空间的归一化距离
 cmp_result|Array|人脸搜索的结果，返回 face_set 人脸距离在 threshold 以下的所有人脸信息的集合，具体内容见下文。注：如果没有相似人脸信息则为空数组
@@ -105,3 +105,62 @@ face_token|String|搜索到的人脸 face_token
 distant|Float32|目标人脸与 face_set 搜索人脸的距离
 face_name|String|搜索人脸的名称（需要在上传人脸信息时提供）
 
+### Add Face API
+
+#### 描述
+向 FaceSet 中添加人脸标识 face_token。
+
+#### 调用URL
+[http://localhost:5000/addface](http://localhost:5000/addface)
+
+#### 调用方法
+`GET`
+
+#### 请求参数
+是否必选|参数名|类型|参数说明
+:---|:---|:---|:---
+必选|face_token|String|需要保存到 face_set 中的 face_token
+可选|face_name|String|face_token 对应的人脸名称标识，若参数为空，默认为unknown
+
+#### 返回值说明
+字段|类型|说明
+:---|:---|:---
+sucess|Bool|标志位，表示操作是否成功
+face_token|String|保存到face_set中的face_token
+face_neme|String|保存到face_set中的face_name
+
+### Remove Face API
+
+#### 描述
+从 FaceSet 中删除人脸标识 face_token。
+
+#### 调用URL
+[http://localhost:5000/removeface](http://localhost:5000/removeface)
+
+#### 调用方法
+`GET`
+
+#### 请求参数
+是否必选|参数名|类型|参数说明
+:---|:---|:---|:---
+必选|face_token|String|需要从 face_set 中移除的 face_token
+
+#### 返回值说明
+字段|类型|说明
+:---|:---|:---
+sucess|Bool|标志位，表示操作是否成功
+face_token|String|从 face_set 中移除的 face_token
+
+### ERROR
+
+#### 常见的错误信息说明
+
+错误码|错误信息|说明
+:---|:---|:---
+1001|BAD_ARGUMENTS|某个参数解析出错（比如必须是数字，但是输入的是非数字字符串; 或者长度过长，etc.）
+1002|MISSING_ARGUMENTS|缺少某个必选参数。
+1003|INTERNAL_ERROR|服务器内部错误
+1004|FIlE_ERROR|文件错误，上传文件类型不支持
+1005|UPLOAD_ERROR|上传错误，参数和数据获取失败
+1006|FACE_TOKEN_ERROR|查找不到face_token信息，不能识别face_token
+1007|FACE_INFO_ERROR|未检测到人脸信息

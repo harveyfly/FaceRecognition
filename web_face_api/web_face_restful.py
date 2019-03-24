@@ -164,7 +164,8 @@ def detect():
             faces = None
         return jsonify({"sucess": True, "face_num": face_num, "faces": faces})
     else:
-        return error.get_error("1005", error_msg=None)
+        # 文件类型不支持
+        return error.get_error("1004", error_msg=None)
 
 # 查找相似人脸信息
 @app.route('/search', methods={'POST', 'GET'})
@@ -279,37 +280,48 @@ def search():
 # 向 face_set 中添加人脸信息
 @app.route('/addface', methods=['GET'])
 def addface():
+    # 如果调用方法不为 GET 则跳过
     if request.method != 'GET':
         pass
-    face_token = request.args.get('face_token')
-    face_name = request.args.get('face_name')
+    try:
+        face_token = request.args.get('face_token')
+        face_name = request.args.get('face_name')
+    except:
+        # 参数获取错误
+        return error.get_error("1005", error_msg=None)
     if face_token is None:
         # 输入参数不完整
         return error.get_error("1002", error_msg=None)
     if face_name is None:
+        # 默认人脸名称为unknown
         face_name = 'unkonwn'
     not_found = True
     for face in face_info:
         if(face['face_token'] == face_token):
-            # try:
-            not_found = False
-            add_face_token = face_token
-            add_face_dist = face['face_dist']
-            add_face_name = face_name
-            add_face_path = face['face_path']
-            flag = FaceDB.insert_face(add_face_token, add_face_dist, add_face_name, add_face_path)
-            if flag:
-                return jsonify({
-                    "sucess": True,
-                    "face_token": add_face_token,
-                    "face_neme": add_face_name
-                })
-            else:
+            try:
+                not_found = False
+                add_face_token = face_token
+                add_face_dist = face['face_dist']
+                add_face_name = face_name
+                add_face_path = face['face_path']
+                # 从数据库中查找人脸信息
+                # 注意face_path不能包含中文编码
+                flag = FaceDB.insert_face(add_face_token, add_face_dist, add_face_name, add_face_path)
+                if flag:
+                    return jsonify({
+                        "sucess": True,
+                        "face_token": add_face_token,
+                        "face_neme": add_face_name
+                    })
+                else:
+                    # 数据库操作错误
+                    return error.get_error("1003", error_msg=None)
+            except:
+                # 内存数据读取错误
                 return error.get_error("1003", error_msg=None)
-            # except Exception:
-            #     return error.get_error("1003", error_msg=None)
             break
     if not_found:
+        # 不能识别face_token
         return error.get_error("1006", error_msg=None)
 
 # 从face_set中删除人脸信息
@@ -321,13 +333,18 @@ def removeface():
     if face_token_op is None:
         # 输入参数不完整
         return error.get_error("1002", error_msg=None)
-    flag = FaceDB.delete_face(face_token_op)
-    if flag:
-        return jsonify({
-            "sucess": True,
-            "face_token": face_token_op,
-        })
-    else:
+    try:
+        flag = FaceDB.delete_face(face_token_op)
+        if flag:
+            return jsonify({
+                "sucess": True,
+                "face_token": face_token_op,
+            })
+        else:
+            # 数据库操作错误
+            return error.get_error("1003", error_msg=None)
+    except:
+        # 内部错误错误
         return error.get_error("1003", error_msg=None)
     
 # 下载图片
