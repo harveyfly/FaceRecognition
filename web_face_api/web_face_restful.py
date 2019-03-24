@@ -204,8 +204,13 @@ def search():
                 "cmp_result": re_info
             })
     elif request.method == 'POST':
-        f = request.files['image_file']
-        threshold = request.form['threshold']
+        try:
+            # 获取上传参数
+            f = request.files['image_file']
+            threshold = request.form['threshold']
+        except:
+            # 上传参数获取出错
+            return error.get_error("1005", error_msg=None)
         if f is None or threshold == '':
             # 输入参数不完整
             return error.get_error("1002", error_msg=None)

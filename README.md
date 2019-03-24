@@ -30,12 +30,12 @@ Facenet-based face recognition, web API was created by Python Flask
 #### 请求参数
 是否必选|参数名|类型|参数说明
 :---|:---|:---|:---
-必选|image_file|File|图片，二进制文件，需要用post multipart/form-data的方式上传
+必选|image_file|File|图片，二进制文件，需要用post form-data的方式上传
 
 #### 返回值说明
 字段|类型|说明
 :---|:---|:---
-sucess|String|标志位，表示请求是否成功
+sucess|Bool|标志位，表示请求是否成功
 face_num|Int|图片中人脸的数量
 faces|Array|被检测出的人脸数组，具体包含内容见下文。注：如果没有检测出人脸则为空数组
 
@@ -64,11 +64,44 @@ bottom_right|Object|人脸位置矩形边框的右下角坐标
 `POST` `GET`
 
 #### 请求参数
-是否必选|参数名|类型|参数说明
-:---|:---|:---|:---
-必选|image_file|File|图片，二进制文件，需要用post multipart/form-data的方式上传
+<table>
+    <thead>
+        <td>是否必选</td>
+        <td>参数名</td>
+        <td>类型</td>
+        <td>参数说明</td>
+    </thead>
+    <tr>
+        <td rowspan="2">必选（二选一）</td>
+        <td>face_token</td>
+        <td>String</td>
+        <td>进行搜索的目标人脸的 face_token ，使用 get 的方法调用</td>
+    </tr>
+    <tr>
+        <td>image_file</td>
+        <td>File</td>
+        <td>目标人脸所在的图片，二进制文件，需要用 post form-data 的方式上传。</td>
+    </tr>
+    <tr>
+        <td>必选</td>
+        <td>threshold</td>
+        <td>String</td>
+        <td>用于比较的距离阈值, 表示两个人脸信息向量在欧式空间的归一化距离, 越接近0表示相似程度越高（参考值0.65）</td>
+    </tr>
+</table>
 
 #### 返回值说明
+字段|类型|说明
+:---|:---|:---
+sucess|Bool|标志位，表示请求是否成功
+face_token|String|进行搜索的目标人脸的 face_token
+threshold|String|用于比较的距离阈值, 表示两个人脸信息向量在欧式空间的归一化距离
+cmp_result|Array|人脸搜索的结果，返回 face_set 人脸距离在 threshold 以下的所有人脸信息的集合，具体内容见下文。注：如果没有相似人脸信息则为空数组
 
-
+#### cmp_result 数组中单个元素的结构
+字段|类型|说明
+:---|:---|:---
+face_token|String|搜索到的人脸 face_token
+distant|Float32|目标人脸与 face_set 搜索人脸的距离
+face_name|String|搜索人脸的名称（需要在上传人脸信息时提供）
 
