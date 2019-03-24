@@ -6,3 +6,4 @@ crop_faces/
 emb_img/
 test_img/
 *~
+*.ini

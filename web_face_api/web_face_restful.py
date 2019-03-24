@@ -203,6 +203,71 @@ def search():
                 "threshlod": threshold, 
                 "cmp_result": re_info
             })
+    elif request.method == 'POST':
+        f = request.files['image_file']
+        threshold = request.form['threshold']
+        if f is None or threshold == '':
+            # 输入参数不完整
+            return error.get_error("1002", error_msg=None)
+        else:
+            upload_dir = os.path.join(basedir, app.config['UPLOAD_FOLDER'])
+            crop_face_dir = os.path.join(basedir, app.config['CROP_IMG_FOLDER'])
+            if allowed_file(f.filename):
+                try:
+                    fname = secure_filename(f.filename)
+                    ext = fname.split('.', 1)[1]
+                    new_filename = str(uuid.uuid1()) + '.' + ext
+                    new_file_path = os.path.join(upload_dir, new_filename)
+                    # 存储image文件到本地
+                    f.save(new_file_path)
+                    print("Save " + new_filename + " sucess!")
+                except Exception as ex:
+                    return error.get_error("1004", str(ex))
+                # 检测人脸位置
+                status, face_location = DetectFaceLocation(new_file_path)
+                if status:
+                    # 获取最大的人脸图像
+                    face_op = ImgFaceCrop(new_file_path, 160, face_location)[0]
+                    face_path_op = os.path.join(crop_face_dir, face_op['face_name'])
+                    # 生成向量
+                    face_dist_op = EmbeddingFace(face_path_op)
+                    # 生成face_token
+                    face_token_op = gen_face_token()
+                    face_op['face_token'] = face_token_op
+                    # 向内存的face_info中添加该人脸信息
+                    face_info.append({
+                        "face_token": face_token_op, 
+                        "face_dist": face_dist_op, 
+                        "face_path": face_path_op
+                    })
+                    # 从数据库FaceDB中获得face_set
+                    face_set = FaceDB.get_face_info_all()
+                    # 返回数据
+                    re_info = []
+                    for face in face_set:
+                        face_set_token = face['face_token']
+                        face_set_dist = face['face_dist']
+                        face_set_name = face['face_name']
+                        # 计算欧式空间距离
+                        dist = np.sqrt(np.sum(np.square(np.subtract(face_dist_op, face_set_dist))))
+                        if face_token_op != face_set_token and dist <= float(threshold):
+                            re_face = {}
+                            re_face['face_token'] = face_set_token
+                            re_face['distant'] = dist
+                            re_face['face_name'] = face_set_name
+                            re_info.append(re_face)
+                    return jsonify({
+                        "sucess": True, 
+                        "face_token": face_token_op,
+                        "threshlod": threshold, 
+                        "cmp_result": re_info
+                    })
+                else:
+                    # 未检测到人脸信息
+                    return error.get_error("1007", error_msg=None)
+            else:
+                # 文件错误
+                return error.get_error("1004", error_msg=None)
     else:
         pass
 

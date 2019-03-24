@@ -6,10 +6,11 @@
 </head>
     <body>
         <div>
-            <form method="post" action="http://localhost:5000/detect" enctype="multipart/form-data">
+            <form method="post" action="http://localhost:5000/search" enctype="multipart/form-data">
             <input type="file" size="30" name="image_file"/>
             <br>
-            <input type="text" class="txt_input" name="name" style="margin-top:15px;"/>
+            threshold：
+            <input type="text" class="txt_input" name="threshold" style="margin-top:15px;"/>
             <input type="submit" value="提交信息" class="button-new" style="margin-top:15px;"/>
             </form>
         </div>

@@ -50,6 +50,25 @@ bottom_right|Object|人脸位置矩形边框的右下角坐标
 ### Search API
 
 #### 描述
-将两个人脸进行比对，根据距离阈值判断是否为同一个人
+查找相似人脸，根据face_token或者上传的图片文件，以及threshold从数据库的face_set中找到最近距离的人脸信息
+
+#### 图片要求
+图片格式：JPG(JPEG)，PNG
+图片像素尺寸：最小 48*48 像素，最大 4096*4096 像素
+图片文件大小：2 MB
+
+#### 调用URL
+[http://localhost:5000/search](http://localhost:5000/search)
+
+#### 调用方法
+`POST` `GET`
+
+#### 请求参数
+是否必选|参数名|类型|参数说明
+:---|:---|:---|:---
+必选|image_file|File|图片，二进制文件，需要用post multipart/form-data的方式上传
+
+#### 返回值说明
+
 
 

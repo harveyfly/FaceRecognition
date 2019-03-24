@@ -9,7 +9,8 @@ class ERROR:
             "1003": "INTERNAL_ERROR",
             "1004": "FIlE_ERROR",
             "1005": "UPLOAD_ERROR",
-            "1006": "FACE_TOKEN_ERROR"
+            "1006": "FACE_TOKEN_ERROR",
+            "1007": "FACE_INFO_ERROR"
         }
     
     def get_error(self, error_code, error_msg):
