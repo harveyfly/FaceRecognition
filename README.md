@@ -9,7 +9,7 @@ Facenet-based face recognition, web API was created by Python Flask
 
 ## Web Face API
 
-![架构图](https://yespace.xyz/images/tensorflow_server.jpg)
+![架构图](https://yesgithub-1254021701.cos.ap-beijing.myqcloud.com/tf-serving-diagram.svg?q-sign-algorithm=sha1&q-ak=AKIDzlRDMTEUZMHHJPS9jhBvLvnNR7o61ds0&q-sign-time=1553432432;1553434232&q-key-time=1553432432;1553434232&q-header-list=&q-url-param-list=&q-signature=23489964eddece813dc4ac93d802a1aff98f7127&x-cos-security-token=08b5ef72c2f905a79091f945b0dc0715f45fd44f10001)
 
 ### Detect API
 
