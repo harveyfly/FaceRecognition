@@ -11,6 +11,34 @@ Facenet-based face recognition, web API was created by Python Flask
 
 ![架构图](https://yesgithub-1254021701.cos.ap-beijing.myqcloud.com/tf-serving-diagram.svg?q-sign-algorithm=sha1&q-ak=AKIDzlRDMTEUZMHHJPS9jhBvLvnNR7o61ds0&q-sign-time=1553432432;1553434232&q-key-time=1553432432;1553434232&q-header-list=&q-url-param-list=&q-signature=23489964eddece813dc4ac93d802a1aff98f7127&x-cos-security-token=08b5ef72c2f905a79091f945b0dc0715f45fd44f10001)
 
+### 配置文件
+配置文件命名为`_config.ini`，放在web_face_api目录下，内容如下：
+```
+; _config.ini
+
+# 数据库配置文件
+[database]
+host=localhost
+port=3306
+user=xxxx
+passwd=xxxxxxx
+db_name=FaceDB
+
+# restful 配置文件
+[restful]
+upload_dir=upload
+crop_face_dir=crop_faces
+
+# html模板配置文件目录
+[templates]
+upload_html=up.html
+
+# tensorflow 模型配置文件
+[model]
+model_dir=../20180402-114759/
+
+```
+
 ### Detect API
 
 #### 描述
