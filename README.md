@@ -66,10 +66,10 @@ bottom_right|Object|人脸位置矩形边框的右下角坐标
 #### 请求参数
 <table>
     <thead>
-        <td>是否必选</td>
-        <td>参数名</td>
-        <td>类型</td>
-        <td>参数说明</td>
+        <td><strong>是否必选</strong></td>
+        <td><strong>参数名</strong></td>
+        <td><strong>类型</strong></td>
+        <td><strong>参数说明</strong></td>
     </thead>
     <tr>
         <td rowspan="2">必选（二选一）</td>
