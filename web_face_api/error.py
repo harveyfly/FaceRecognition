@@ -1,4 +1,4 @@
-# Error Message 返回
+# Error Message
 from flask import jsonify
 
 class ERROR:

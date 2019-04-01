@@ -1,28 +1,41 @@
 # encoding utf-8
-# restful_api 数据库操作
+# restful_api database operation
 
 import MySQLdb
 import os
 import numpy as np
-from configparser import ConfigParser
+import logging
+import config
 
-# 人脸信息数据库类
+# face db class
 class face_db:
     def __init__(self):
-        cfg = ConfigParser()
-        cfg.read('_config.ini')
-        self.host = cfg.get('database', 'host')
-        self.user = cfg.get('database', 'user')
-        self.passwd = cfg.get('database', 'passwd')
-        self.db_name = cfg.get('database', 'db_name')
+        self._logger = logging.getLogger(__name__)
+        # load config file
+        if config.has('database'):
+            db_conf = config.get('database')
+            if 'host' in db_conf and \
+                'port' in db_conf and \
+                'user' in db_conf and \
+                'passwd' in db_conf and \
+                'db_name' in db_conf:
+                self.host = db_conf['host']
+                self.port = db_conf['port']
+                self.user = db_conf['user']
+                self.passwd = db_conf['passwd']
+                self.db_name = db_conf['db_name']
+        else:
+            self._logger.error("Can't get database config")
+            return
+        # save database connection
         self.db_conn = None
         
     def conn_face_db(self):
         try:
             self.db_conn = MySQLdb.connect(self.host, self.user, self.passwd, self.db_name)
-            print(self.db_name, " Connected!")
-        except Exception:
-            print("MySQL Error: ", Exception)
+            self._logger.info("Connect %s.%s database sucess!" % (self.host, self.db_name))
+        except Exception as ex:
+            self._logger.error("MySQL Error: %s" % str(ex))
             return False
         return True
     
@@ -31,16 +44,16 @@ class face_db:
             cursor = self.db_conn.cursor()
             sqlInsert = "INSERT INTO face_set(face_token, face_dist, face_name, face_path) VALUES (%s, %s, %s, %s)"
             val = (face_token, face_dist.tostring(), face_name, face_path)
-            print(sqlInsert, val)
             try:
                 cursor.execute(sqlInsert, val)
                 self.db_conn.commit()
+                self._logger.info("Insert face_token:%s into face_token sucess" % face_token)
                 return True
             except Exception:
-                print("Execuet Insert Error!")
+                self._logger.error("MySQL Error: %s" % str(Exception))
                 return False
         else:
-            print("face_token is None, Insert Error")
+            self._logger.error("face_token is None, Insert Error")
         return False
 
     def delete_face(self, face_token):
@@ -50,12 +63,13 @@ class face_db:
             try:
                 cursor.execute(sqlDelete, face_token)
                 self.db_conn.commit()
+                self._logger.info("Delete face_token:%s from face_set sucess" % face_token)
                 return True
-            except Exception:
-                print("Execute Delete Error!")
+            except Exception as ex:
+                self._logger.error("MySQL Error: %s" % str(ex))
                 return False
         else:
-            print("face_token is None, Delete Error!")
+            self._logger.error("face_token is None, Insert Error")
         return False
 
     def get_face_dist(self, face_token):
@@ -68,9 +82,9 @@ class face_db:
                 face_dist = np.frombuffer(values[0][0], dtype=np.float32)
                 return face_dist
             except Exception as ex:
-                print("get face_dist by face_token Error!", ex)
+                self._logger.error("MySQL Error: %s" % str(ex))
         else:
-            print("face_token is None, Search Error")
+            self._logger.error("face_token is None, Search Error")
         return None
 
     def get_face_info_all(self):
@@ -88,7 +102,7 @@ class face_db:
                 face['face_path'] = value[3]
                 faces.append(face)
         except Exception as ex:
-            print("get face_dist_all Error!", ex)
+            self._logger.error("MySQL Error: %s" % str(ex))
         return faces
 
     def get_face_path(self, face_token):
@@ -101,14 +115,7 @@ class face_db:
                 face_path = values[0][0]
                 return face_path
             except Exception as ex:
-                print("get face_path Error!", ex)
+                self._logger.error("MySQL Error: %s" % str(ex))
         else:
-            print("face_token is None, Search Error")
+            self._logger.error("face_token is None, Search Error")
         return None
-
-
-## TEST
-# faceDB = face_db()
-# faceDB.conn_face_db()
-# dist = faceDB.get_face_dist_all()
-# print(dist)

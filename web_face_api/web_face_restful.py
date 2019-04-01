@@ -19,19 +19,33 @@ import numpy as np
 import tensorflow as tf
 from scipy import misc
 from face_db import face_db
-from configparser import ConfigParser
+import config
+import logging
 import facenet
 import align.detect_face
 import error
 
+# flask app
 app = Flask(__name__)
 
-# 加载配置文件
-cfg = ConfigParser()
-cfg.read('./_config.ini')
+# logging init
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+_logger = logging.getLogger(__name__)
 
-app.config['UPLOAD_FOLDER'] = cfg.get('restful', 'upload_dir')
-app.config['CROP_IMG_FOLDER'] = cfg.get('restful', 'crop_face_dir')
+# load project config
+config.init(config_file='_config.yml')
+
+if config.has('restful') and config.has('templates'):
+    restful_conf = config.get('restful')
+    tem_conf = config.get('templates')
+    _logger.info("loaded profile sucess")
+else:
+    _logger.info("load profile failed, exitting...")
+
+app.config['UPLOAD_FOLDER'] = restful_conf['upload_dir']
+app.config['CROP_IMG_FOLDER'] = restful_conf['crop_face_dir']
+
+# create if not exists dir
 basedir = os.path.abspath(os.path.dirname(__file__))
 if not os.path.exists(os.path.join(basedir, app.config['UPLOAD_FOLDER'])):
     os.makedirs(os.path.join(basedir, app.config['UPLOAD_FOLDER']))
@@ -122,7 +136,7 @@ def ImgFaceCrop(image_path, new_image_size, face_location):
 # 加载上传文件页面
 @app.route('/upload')
 def upload():
-    return render_template(cfg.get('templates', 'upload_html'))
+    return render_template(tem_conf['upload_html'])
  
 # Face detect api
 @app.route('/detect', methods=['POST'], strict_slashes=False)
@@ -379,7 +393,7 @@ if __name__ == '__main__':
             pnet, rnet, onet = align.detect_face.create_mtcnn(sess, None)
 
             # 加载模型
-            model=cfg.get('model', 'model_dir')
+            model = restful_conf['model_dir']
             facenet.load_model(model)
 
             # 获取输入输出tensors
@@ -398,4 +412,9 @@ if __name__ == '__main__':
     app.json_encoder = MyEncoder
     # 加载ERROR类
     error = error.ERROR()
-    app.run(debug=True)
+    # 开启flask服务
+    app.run(
+        host=restful_conf['host'],
+        port=restful_conf['port'],
+        debug=restful_conf['debug']
+    )
