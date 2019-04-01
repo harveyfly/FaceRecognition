@@ -5,6 +5,6 @@ tensorflow==1.12.0
 matplotlib
 sklearn
 flask
-configparser
+yaml
 mysqlclient
 imutils

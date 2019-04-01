@@ -12,30 +12,53 @@ Facenet-based face recognition, web API was created by Python Flask
 ![架构图](https://yesgithub-1254021701.cos.ap-beijing.myqcloud.com/tf-serving-diagram.svg?q-sign-algorithm=sha1&q-ak=AKIDzlRDMTEUZMHHJPS9jhBvLvnNR7o61ds0&q-sign-time=1553432432;1553434232&q-key-time=1553432432;1553434232&q-header-list=&q-url-param-list=&q-signature=23489964eddece813dc4ac93d802a1aff98f7127&x-cos-security-token=08b5ef72c2f905a79091f945b0dc0715f45fd44f10001)
 
 ### 配置文件
-配置文件命名为`_config.ini`，放在web_face_api目录下，内容如下：
+配置文件命名为`_config.yml`，放在web_face_api目录下，内容如下：
 ```
-; _config.ini
+# _config.yml
+database:
+    host: 'database_url'
+    port: 3306
+    user: 'name'
+    passwd: 'password'
+    db_name: 'FaceDB'
 
-# 数据库配置文件
-[database]
-host=localhost
-port=3306
-user=xxxx
-passwd=xxxxxxx
-db_name=FaceDB
+restful:
+    # set host='0.0.0.0' if want to accessed by others
+    host: 'localhost'
+    # flask default port, note the firewall
+    port: 5000
+    # flask mode
+    debug: true
+    # upload file dir
+    upload_dir: 'upload'
+    # face dir
+    crop_face_dir: 'crop_faces'
+    # tensorflow model dir
+    model_dir: "../20180402-114759/"
 
-# restful 配置文件
-[restful]
-upload_dir=upload
-crop_face_dir=crop_faces
+# html templates
+templates:
+    upload_html: 'up.html'
+    index_html: 'index.html'
 
-# html模板配置文件目录
-[templates]
-upload_html=up.html
+```
 
-# tensorflow 模型配置文件
-[model]
-model_dir=../20180402-114759/
+### 运行说明
++ 安装 python 库
+```
+hwy@server: ~/FaceRecognition $ sudo pip install -r requirements.txt
+```
+
++ 部署服务
+```
+# 开启防火墙
+hwy@server: ~$ sudo apt-get install ufw -y
+hwy@server: ~$ sudo ufw allow 22
+hwy@server: ~$ sudo ufw allow 5000
+hwy@server: ~$ sudo ufw enable
+
+# 开启服务
+hwy@server: ~/FaceRecognition/web_face_api $ sudo python web_face_restful.py
 
 ```
 
